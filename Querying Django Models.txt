@@ -1,0 +1,262 @@
+=========================================================================================================================
+Complex lookups with Q objects
+=========================================================================================================================
+>>> Language.objects.filter( Q(lang_name__istartswith='P') )
+<QuerySet [<Language: Python>, <Language: PHP>, <Language: Perl>]>
+
+>>> Framework.objects.filter( Q(frame_name__istartswith='d') & Q(frame_lang__lang_name__istartswith='p') )
+<QuerySet [<Framework: Django>]>
+
+>>> Framework.objects.filter( Q(frame_name__istartswith='d') & Q(frame_lang__lang_name__istartswith='ph') )
+<QuerySet []>
+
+>>> Framework.objects.filter( Q(frame_name__istartswith='l') & Q(frame_lang__lang_name__istartswith='ph') )
+<QuerySet [<Framework: Laravel>]>
+
+>>> Framework.objects.filter( Q(frame_name__istartswith='d') & ~Q(frame_lang__lang_name__istartswith='ph') )
+<QuerySet [<Framework: Django>]>
+
+>>> Framework.objects.filter( Q(frame_name__istartswith='b') & ~Q(frame_lang__lang_name__istartswith='p') )
+<QuerySet []>
+
+===================================================ERROR=================================================================
+>>> Entry.objects.filter(Q(pub_date=date(2020-05-01))andQ(headline__istartswith='v'))
+  File "<console>", line 1
+    Entry.objects.filter(Q(pub_date=date(2020-05-01))andQ(headline__istartswith='v'))
+                                               ^
+SyntaxError: invalid token
+>>> Entry.objects.filter(Q(pub_date=date(2020, 05, 01))andQ(headline__istartswith='v'))
+  File "<console>", line 1
+    Entry.objects.filter(Q(pub_date=date(2020, 05, 01))andQ(headline__istartswith='v'))
+                                                ^
+SyntaxError: invalid token
+>>> Entry.objects.filter(Q(pub_date=date(2020,5,1))andQ(headline__istartswith='v'))
+  File "<console>", line 1
+    Entry.objects.filter(Q(pub_date=date(2020,5,1))andQ(headline__istartswith='v'))
+                                                      ^
+SyntaxError: invalid syntax
+
+
+
+
+>>> from datetime import date
+
+>>> Entry.objects.filter( Q(pub_date=date(2020,5,1)) & Q(headline__istartswith='v') )
+<QuerySet [<Entry: Visualizing data using python libraries>]>
+
+>>> Entry.objects.filter( Q(pub_date=date(2020,5,1)) & ~Q(headline__istartswith='v') )
+<QuerySet [<Entry: Preprocessing data before feeding it to ML model>]>
+
+>>> Entry.objects.filter( Q(pub_date=date(2020,5,1)) | Q(headline__istartswith='v') )
+<QuerySet [<Entry: Preprocessing data before feeding it to ML model>, <Entry: Visualizing data using python libraries>]>
+
+
+
+>>> Entry.objects.filter( Q(headline__istartswith='p'), Q(pub_date=date(2020,4,23)) | Q(pub_date=date(2020,5,1)) )
+<QuerySet [<Entry: Pandas Hack for ML>, <Entry: Preprocessing data before feeding it to ML model>]>
+
+
+THIS IS TRANSFORMED INTO SQL LIKE THIS
+
+" SELECT * from polls WHERE headline LIKE 'p%' AND (pub_date = '2020-04-23' OR pub_date = '2020-05-01') "
+
+
+>>> Entry.objects.filter( Q(pub_date=date(2020,4,23)) | Q(pub_date=date(2020,5,1)), headline__istartswith='p')
+<QuerySet [<Entry: Pandas Hack for ML>, <Entry: Preprocessing data before feeding it to ML model>]>
+
+
+>>> Entry.objects.filter( headline__istartswith='p', Q(pub_date=date(2020,4,23)) | Q(pub_date=date(2020,5,1)) )
+  File "<console>", line 1
+SyntaxError: positional argument follows keyword argument
+
+
+==========================================================================================================================
+Deleting objects
+==========================================================================================================================
+>>> Entry.objects.filter(headline__iexact='Dummy')
+<QuerySet [<Entry: dummy>]>
+
+>>> e = Entry.objects.filter(headline__iexact='Dummy')
+>>> e
+<QuerySet [<Entry: dummy>]>
+
+>>> e.delete()
+(2, {'Practice.Entry_authors': 1, 'Practice.Entry': 1})
+
+>>> Entry.objects.filter(headline__iexact='Dummy')
+<QuerySet []>
+
+
+You can also delete objects in bulk. Every QuerySet has a delete() method, which deletes all members of that QuerySet.
+
+>>> Entry.objects.filter(pub_date__month=6)
+<QuerySet [<Entry: temp>, <Entry: temp1>]>
+
+
+>>> Entry.objects.filter(pub_date__month=6).delete()
+(4, {'Practice.Entry_authors': 2, 'Practice.Entry': 2})
+
+
+>>> Entry.objects.filter(pub_date__month=6)
+<QuerySet []>
+
+
+>>> Entry.objects.filter(Q(headline__istartswith='dumm') & Q(pub_date=date(2020, 5, 11)))
+<QuerySet [<Entry: dummy1>]>
+
+>>> Entry.objects.filter(Q(headline__istartswith='dumm') & Q(pub_date=date(2020, 5, 11))).delete()
+(2, {'Practice.Entry_authors': 1, 'Practice.Entry': 1})
+
+
+>>> Entry.objects.filter(Q(headline__istartswith='dumm') & Q(pub_date=date(2020, 5, 11)))
+<QuerySet []>
+
+
+Note:
+=====
+delete() is the only QuerySet method that is not exposed on a Manager itself. This is a safety mechanism to prevent you from accidentally requesting 
+Entry.objects.delete(), and deleting all the entries. 
+If you do want to delete all the objects, then you have to explicitly request a complete query set:
+
+	Entry.objects.all().delete()
+
+
+==========================================================================================================================
+Copying model instances
+==========================================================================================================================
+pass for now
+
+
+
+
+==========================================================================================================================
+Updating multiple objects at once
+==========================================================================================================================
+Sometimes you want to set a field to a particular value for all the objects in a QuerySet. You can do this with the update() method.
+
+
+>>> Entry.objects.filter(pub_date__year=2020)
+<QuerySet [<Entry: Pandas Hack for ML>, <Entry: Preprocessing data before feeding it to ML model>, <Entry: Django2.0.07>, <Entry: Visualizing data using python libraries>]>
+
+
+
+>>> Entry.objects.filter(pub_date__year=2020).update(mod_date=datetime.datetime.now())
+4
+
+Note:1
+=======
+The update() method is applied instantly and returns the number of rows matched by the query 
+
+
+Note:2
+=======
+To update a non-relation field, provide the new value as a constant. 
+But, To update ForeignKey fields, set the new value to be the new model instance you want to point to. For example:
+
+>>> Entry.objects.filter(blog__name__istartswith='Django')
+<QuerySet [<Entry: Django2.0.07>, <Entry: matplotlib tutuorial>, <Entry: seaborn tutuorial>]>
+
+
+See matplotlib and seaborn are not related to Dajango blog i want to update the blog relationship with blog Data visualization for these Entries
+
+
+>>> Entry.objects.filter(headline__icontains='Tutuorial')
+<QuerySet [<Entry: matplotlib tutuorial>, <Entry: seaborn tutuorial>]>
+
+
+>>> b = Blog.objects.get(name__iexact='Data visualization')
+>>> b
+<Blog: Data visualization>       # new blog instance to point/link for filtered Entries
+
+
+>>> Entry.objects.filter(headline__icontains='Tutuorial').update(blog=b)
+2
+
+
+>>> Entry.objects.filter(blog__name__istartswith='Django')
+<QuerySet [<Entry: Django2.0.07>]>
+
+
+
+=========================================================================================================================
+select_related()
+=========================================================================================================================
+Returns a QuerySet that will “follow” foreign-key relationships, selecting additional related-object data when it executes its query. This is a performance booster 
+which results in a single more complex query but means later use of foreign-key relationships won’t require database queries.
+
+
+
+# Hits the database.
+e = Entry.objects.get(id=5)
+
+# Hits the database again to get the related Blog object.
+b = e.blog
+
+
+# Hits the database.
+e = Entry.objects.select_related('blog').get(id=5)
+
+# Doesn't hit the database, because e.blog has been prepopulated
+# in the previous query.
+b = e.blog
+
+
+
+
+>>> q = Entry.objects.filter(blog__name__startswith='D')
+ 
+
+>>> for i in q:
+...     i.blog
+...
+<Blog: Django Tutorial>         # Hit the database again and get related blog name
+<Blog: Data visualization>	# Hit the database again and get related blog name		
+<Blog: Data visualization>	# Hit the database again and get related blog name
+<Blog: Data visualization>	# Hit the database again and get related blog name
+
+
+>>> q = Entry.objects.filter(blog__name__startswith='D').select_related('blog')  # get the related blog info at the same time to reduce the database hits when querying related blog info
+
+>>> for i in q:
+...     i.blog
+...
+<Blog: Django Tutorial>   	# Don't hit the database again
+<Blog: Data visualization>	# Don't hit the database again
+<Blog: Data visualization>	# Don't hit the database again
+<Blog: Data visualization>	# Don't hit the database again
+
+
+
+=============================================================================================================================================================
+
+Forward querying (getting entries of an author from Entry model)    (note: Many-To-Many Relation)  Author and Entry models has many-to-many relationship
+================
+
+>>> Entry.objects.filter(authors__name__istartswith='vis')
+<QuerySet [<Entry: Preprocessing data before feeding it to ML model>, <Entry: Django2.0.07>, <Entry: matplotlib tutuorial>, <Entry: seaborn tutuorial>]>
+
+
+Reverse querying (getting entries of an author from Author model)    (note: Many-To-Many Relation)  Author and Entry models has many-to-many relationship
+================
+
+>>> a = Author.objects.get(pk=1)
+>>> a
+<Author: Vissu>                          # Author object
+>>> a.entry_set.all()
+<QuerySet [<Entry: Preprocessing data before feeding it to ML model>, <Entry: Django2.0.07>, <Entry: matplotlib tutuorial>, <Entry: seaborn tutuorial>]>
+
+
+=======================================================ERROR SENARIOS===================================================================================
+>>> a = Author.objects.filter(name__exact='Vissu')
+>>> a
+<QuerySet [<Author: Vissu>]>             # Query set object
+>>>
+>>> a.entry_set.all()
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+AttributeError: 'QuerySet' object has no attribute 'entry_set'
+
+
+
+
+
