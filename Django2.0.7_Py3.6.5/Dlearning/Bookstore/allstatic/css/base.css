@@ -1,0 +1,22 @@
+/* body{
+    background-image: url(http://127.0.0.1:8000/static/images/background-image.jpg);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position-x: 0px;
+    background-position-y: -190px;
+} */
+
+#signupbtn{
+    margin-right: 15px;
+    margin-top: 7px;
+}
+
+#loginbtn{
+    margin-right: 15px;
+    margin-top: 7px;
+}
+
+#logoutbtn{
+    margin-right: 15px;
+    margin-top: 7px;
+}

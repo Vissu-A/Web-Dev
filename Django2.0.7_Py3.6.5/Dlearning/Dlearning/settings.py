@@ -121,6 +121,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = './Bookstore/allstatic/'
 
 '''Your project will probably also have static assets that aren’t tied to a particular app. In addition to 
 using a static/ directory inside your apps, you can define a list of directories (STATICFILES_DIRS) in your 
