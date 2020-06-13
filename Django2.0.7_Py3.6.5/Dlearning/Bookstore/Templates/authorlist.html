@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Author Name</th>
+                    <th>Email</th>
+                    <th>Age</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for author in data %}
+                <tr>
+                    <td><a href="{% url 'authors-name' author.name %}">{{ author.name }}</a></td>
+                    <td>{{ author.email }}</td>
+                    <td>{{ author.age }}</td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

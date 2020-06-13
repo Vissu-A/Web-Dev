@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Publisher Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for publisher in data %}
+                <tr>
+                    <td><a href="{% url 'publishers-name' publisher.name %}">{{ publisher.name }}</a></td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

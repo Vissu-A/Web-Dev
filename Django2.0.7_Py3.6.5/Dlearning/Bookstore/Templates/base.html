@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="{% static 'cdn/bootstrap-3.3.7/jquery/jquery-3.5.1.min.js'%}"></script>
+    <link rel="stylesheet" href="{% static 'cdn/bootstrap-3.3.7/css/bootstrap.min.css'%}">
+    <script src="{% static 'cdn/bootstrap-3.3.7/js/bootstrap.min.js'%}"></script>
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    
+</head>
+
+<body>
+
+    <nav class="navbar navbar-light" style="background-color: #00FFCC;">
+      <div class="container-fluid">
+
+        <div class="navbar-header">
+          <a class="navbar-brand" href="{% url 'home-page'%}">Bookstore</a>
+        </div>
+
+        <ul class="nav navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="{% url 'books-list'%}">Books</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'authors-list'%}">Authors</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'publishers-list'%}">Publishers</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'add-book' %}">Add Books</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'add-author' %}">Add Author</a></li>
+        </ul>
+
+        {% if not request.user.is_authenticated %}
+        <ul class="nav navbar-nav navbar-right">
+          <a class="btn btn-info" id="signupbtn" href="{%url 'signup-path'%}">Register</a>
+          <a class="btn btn-success" id="loginbtn" href="{%url 'signin-path'%}">LogIn</a>
+          <!-- <li class="nav-item"><a class="btn btn-info" href="{%url 'signup-path'%}">SignUp</a></button></li>
+          <li class="nav-item"><button class="btn btn-success navbar-btn" id="loginbtn" type="button"><a class="nav-link" href="{% url 'signin-path'%}">SignIn</a></button></li> -->
+        </ul>
+        {% else %}
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#"><span class="glyphicon glyphicon-user"></span><strong>Hello {{ request.user }}</strong></a></li>
+          <a class="btn btn-warning" id="logoutbtn" href="{%url 'signout-path'%}">Logout</a>
+        </ul>
+        {% endif %}
+
+      </div>
+    </nav>
+
+  <div class="container-fluid">
+    {% block content %}
+    {% endblock %}
+  </div>
+  
+</body>
+
+</html>

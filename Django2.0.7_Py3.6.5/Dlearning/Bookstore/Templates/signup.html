@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<div class="container">
+
+    <div class="col-lg-4">
+
+    </div>
+
+    <div class="col-lg-4 bg-info">
+
+        <div class="container-fluid">
+            <h1><p class="text-center">User Creation Form</p></h1>
+        </div>
+
+        {% if messages %}
+
+        {% for message in messages %}
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+
+        {% endfor %}
+        
+        {% endif %}
+        
+
+        <form action="" method="POST">
+            {% csrf_token %}
+            
+            {% for field in form %}
+
+            {% if field.errors %}
+
+            <div class="form-group">
+                <label for="id_{{field.label}}" class="control-label">{{ field.label }}</label>
+
+                <div class="control">
+                    {{ field }}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                        <li><strong style="color: red;">{{ error }}</strong></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            {% else %}
+
+            <div class="form-group">
+                <label for="id_{{field.label}}" class="control-label">{{field.label}}</label>
+
+                <div class="control">   
+                    {{field}}
+                </div>
+
+            </div>
+
+            {% endif %}
+
+            {% endfor %}
+            
+            <div class="container-fluid">
+                <br><button type="submit" class="btn btn-primary">Create Bookstore Account</button>
+            </div><br>
+
+            <div class="container-fluid">
+                Already have an account? <a href="{% url 'signin-path' %}">Sign-in</a>
+            </div><br>
+            
+        </form>
+
+    </div>
+
+    <div class="col-lg-4">
+
+    </div>
+
+       
+</div>
+
+
+{% endblock %}

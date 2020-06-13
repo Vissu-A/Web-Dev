@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="col-lg-4">
+
+    </div>
+    
+    <div class="col-lg-4 bg-success">
+
+        <div class="container-fluid">
+            <h1><p class="text-center">User LogIn Form</p></h1>
+        </div>
+
+        {% if messages %}
+
+        {% for message in messages %}
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+
+        {% endfor %}
+        
+        {% endif %}
+
+        {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            <p class="text-danger">{{ error }}</p>
+        {% endfor %}
+        {% endif %}
+        
+
+        <form action="" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}" />
+            
+            {% for field in form %}
+
+            {% if field.errors %}
+
+            <div class="form-group">
+                <label for="id_{{field.label}}" class="control-label">{{ field.label }}</label>
+
+                <div class="control">
+                    {{ field }}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                        <li><strong style="color: red;">{{ error }}</strong></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            {% else %}
+
+            <div class="form-group">
+                <label for="id_{{field.label}}" class="control-label">{{field.label}}</label>
+
+                <div class="control">   
+                    {{field}}
+                </div>
+
+            </div>
+
+            {% endif %}
+
+            {% endfor %}
+            
+            <div class="container-fluid">
+                <button type="submit" class="btn btn-primary">LogIn</button>
+            </div><br>
+
+            <div class="container-fluid">
+                New to Bookstore? <a href="{% url 'signup-path'%}">Sign-up</a>
+            </div>
+            <div class="container-fluid">
+                Forgot password? <a href="{% url 'password_reset'%}">Reset Passcode</a>
+            </div><br>
+            
+        </form>
+
+    </div>
+
+    <div class="col-lg-4">
+
+    </div>
+
+       
+</div>
+
+
+{% endblock %}

@@ -25,7 +25,7 @@ SECRET_KEY = ')vc7m*1m3yu@sksuctoz&nyp7wa!(@7+5)l*f)o^@h(09gg8kt'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #My Apps(User defined apps)
-    'Practice',
+    'Practice.apps.PracticeConfig',
+    'Bookstore.apps.BookstoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'Dlearning.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'Bookstore', 'Templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -120,3 +121,25 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+'''Your project will probably also have static assets that aren’t tied to a particular app. In addition to 
+using a static/ directory inside your apps, you can define a list of directories (STATICFILES_DIRS) in your 
+settings file where Django will also look for static files. For example:'''
+
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
+
+
+# Files uploads like images, files using ImageField, FileField in the forms
+MEDIA_ROOT = os.path.join(BASE_DIR, 'Bookstore/static/images')
+MEDIA_URL = '/media/'
+
+
+# SMTP Configurations to send password-rest mail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'djangoclient9@gmail.com'
+EMAIL_HOST_PASSWORD = 'django@007'

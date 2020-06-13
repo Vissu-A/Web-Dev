@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+
+<form action="" method="POST">
+    {% csrf_token %}
+    
+    {% for field in form %}
+
+    {% if field.errors %}
+
+    <div class="control-group error">
+        <label for="" class="control-label">{{ field.label }}</label>
+        <div class="controls">
+            {{ field }}
+            <ul class="errorlist">
+                {% for error in field.errors %}
+                <li><strong style="color: red;">{{ error }}</strong></li>
+                {% endfor %}
+
+            </ul>
+        </div>
+    </div>
+
+    {% else %}
+
+    <div class="control-group">
+        <label for="" class="control-label">{{ field.label }}</label>
+        <div class='control'>
+            {{ field }}
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    {% endfor %}
+
+    
+    <br><button class="btn btn-info" type="submit">Add Author</button>
+
+</form>
+
+</div>
+
+
+
+
+{% endblock %}
