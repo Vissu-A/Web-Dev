@@ -8,23 +8,31 @@ class Authoradmin(admin.ModelAdmin):
     list_filter = ['age']
     search_fields = ['name']
     
+    list_editable = []
+    
 class Publisheradmin(admin.ModelAdmin):
     list_display = ['name']
     list_display_links = ['name']
     list_filter = ['name']
     search_fields = ['name']
+    
+    list_editable = []
 
 class Bookadmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'rating', 'pubdate']
     list_display_links = ['name', 'price']
     list_filter = ['price', 'rating']
-    search_fields = ['name']   
+    search_fields = ['name'] 
+    
+    list_editable = ['rating']  
     
 class Storeadmin(admin.ModelAdmin):
     list_display = ['name']
     list_display_links = ['name']
     list_filter = ['name']
     search_fields = ['name']
+    
+    list_editable = []
     
 class Cityinfoadmin(admin.ModelAdmin):
     list_display = ['name', 'population']
@@ -38,17 +46,23 @@ class Stateinfoadmin(admin.ModelAdmin):
     list_filter = ['name', 'population']
     search_fields = ['name']
     
+    list_editable = []
+    
 class Countryinfoadmin(admin.ModelAdmin):
     list_display = ['name', 'code', 'population']
     list_display_links = ['code']
     list_filter = ['name', 'code']
     search_fields = ['name', 'code']
     
+    list_editable = []
+    
 class Movieadmin(admin.ModelAdmin):
     list_display = ['title', 'director', 'releasedate']
     list_display_links = ['title', 'director']
     list_filter = ['director', 'releasedate']
     search_fields = ['title', 'director']
+    
+    list_editable = []
     
 admin.site.register(Author, Authoradmin)
 admin.site.register(Publisher, Publisheradmin)

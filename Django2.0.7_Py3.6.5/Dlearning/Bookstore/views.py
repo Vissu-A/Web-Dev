@@ -31,6 +31,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password, check_password, is_password_usable
 
+from .tasks import sendingmail
+
 def authorcondition(request, authorname):
     return Book.objects.filter(author__name = authorname).latest('pubdate').pubdate
     
@@ -260,10 +262,15 @@ def signup(request):
         
             if form.is_bound:
                 if form.is_valid():
+                    username = form.cleaned_data['username']
+                    passcode = form.cleaned_data['password1']
+                    emailid = form.cleaned_data['email']
+                    
                     form.save()
                 
                     form = forms.CustomUserRegistrationForm()
-                
+                  
+                    sendingmail.delay(username, passcode, emailid)
                     messages.success(request, 'User created successfully')
                     return redirect('signin-path')
         else:
