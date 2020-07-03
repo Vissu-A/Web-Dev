@@ -33,6 +33,8 @@ from django.contrib.auth.hashers import make_password, check_password, is_passwo
 
 from .tasks import sendingmail
 
+from rest_framework.authtoken.models import Token
+
 def authorcondition(request, authorname):
     return Book.objects.filter(author__name = authorname).latest('pubdate').pubdate
     
@@ -261,12 +263,12 @@ def signup(request):
             form = forms.CustomUserRegistrationForm(request.POST)
         
             if form.is_bound:
-                if form.is_valid():
+                if form.is_valid():                    
+                    form.save()               # Need to fix mail is not saving
+                    
                     username = form.cleaned_data['username']
                     passcode = form.cleaned_data['password1']
                     emailid = form.cleaned_data['email']
-                    
-                    form.save()
                 
                     form = forms.CustomUserRegistrationForm()
                   

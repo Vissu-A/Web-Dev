@@ -23,6 +23,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     #path('practice/', include('Practice.urls')),
     path('bookstore/', include('Bookstore.urls')),
+    
+    # Rest api urls
+    path('api/', include('Bookstore.Api.urls')),
 ]
 
 if settings.DEBUG:

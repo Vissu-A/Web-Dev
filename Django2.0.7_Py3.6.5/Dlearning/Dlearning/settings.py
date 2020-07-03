@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = ')vc7m*1m3yu@sksuctoz&nyp7wa!(@7+5)l*f)o^@h(09gg8kt'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -37,10 +37,29 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
+    
     #My Apps(User defined apps)
     'Practice.apps.PracticeConfig',
     'Bookstore.apps.BookstoreConfig',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 2,
+    'DEFAULT_FILTER_BACKENDS': ['rest_framework.filters.SearchFilter',],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -136,8 +155,7 @@ settings file where Django will also look for static files. For example:'''
 MEDIA_ROOT = os.path.join(BASE_DIR, 'Bookstore/static/images')
 MEDIA_URL = '/media/'
 
-
-# SMTP Configurations to send password-rest mail
+# SMTP Configurations to send mail
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -146,6 +164,14 @@ EMAIL_HOST_PASSWORD = 'django@007'
 EMAIL_USE_TLS = True    # 587
 EMAIL_USE_SSL = False   # 465
 
+# Sendgrid configuration to send Emails
+# first install sendgrid-django module  "pip install sendgrid-django"
+# EMAIL_BACKEND = 'sgbackend.SendGridBackend'
+# SENDGRID_APIKEY = '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'
+# SENDGRID_SANDBOX_MODE_IN_DEBUG = True
+
+# EMAIL_BACKEND = "sgbackend.SendGridBackend"
+# SENDGRID_API_KEY = "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"
 
 # Celery settings
 CELERY_BROKER_URL = 'redis://localhost:6379'
