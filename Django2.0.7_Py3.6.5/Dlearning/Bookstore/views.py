@@ -31,7 +31,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password, check_password, is_password_usable
 
-from .tasks import sendingmail
+from .tasks import mailsend
 
 from rest_framework.authtoken.models import Token
 
@@ -264,15 +264,17 @@ def signup(request):
         
             if form.is_bound:
                 if form.is_valid():                    
-                    form.save()               # Need to fix mail is not saving
                     
                     username = form.cleaned_data['username']
-                    passcode = form.cleaned_data['password1']
                     emailid = form.cleaned_data['email']
+                    passcode = form.cleaned_data['password1']
+
+                    user = User.objects.create_user(username, email=emailid, password=passcode)
+
+                    # mailsend.delay(username, passcode, emailid)
                 
                     form = forms.CustomUserRegistrationForm()
                   
-                    sendingmail.delay(username, passcode, emailid)
                     messages.success(request, 'User created successfully')
                     return redirect('signin-path')
         else:

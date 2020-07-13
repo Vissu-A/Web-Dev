@@ -123,19 +123,21 @@ class CustomUserRegistrationForm(forms.ModelForm):
         strip=False,
         help_text=("Enter the same password as before, for verification."),
     )
+
     
     class Meta:
         model = User
-        fields = ['username', 'email', ]
+        fields = ['username', 'email']
         
         widgets = {
             'username': forms.TextInput(attrs={'class':'form-control', 'autofocus':True}),
             'email': forms.EmailInput(attrs={'class':'form-control'}),
         }
-        
+
         labels = {
-            'email':('Email'),
+            'email' : 'Email address',
         }
+        
         
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -164,11 +166,13 @@ class CustomUserRegistrationForm(forms.ModelForm):
         This function is used to clean the email field of registrationform.
         it check wether email is alreday taken or not.
         '''
+
+        print('clean email method entered.')
         email = self.cleaned_data.get('email')
         
         if User.objects.filter(email = email).exists():
             self.add_error('email', 'Email already taken!')
-                
+        return email
                 
     def save(self, commit=True):
         user = super().save(commit=False)
